@@ -15,15 +15,21 @@ use std::{
 };
 
 fn main() {
-    //returning value from a thread.
-    let numbers = Vec::from_iter(0..=100);
-    let t = thread::spawn(move || {
-        let len = numbers.len();
-        //here sum() requires explicit type mentioning.
-        let sum = numbers.into_iter().sum::<usize>();
-        return sum / len;
+    // scoped threads.
+    //using thread::scope.
+    // It allows us to spawn threads that cant outlive the scope of the closure we pass the
+    // function, making it possible to safely borrow local variables.
+    // BUT this will work only as long as the borrowed value is not modified in any of the
+    // previous scopes.
+    let numbers = Vec::from_iter(1..=10);
+    thread::scope(|s| {
+        s.spawn(|| {
+            println!("Length: {}", numbers.len());
+        });
+        s.spawn(|| {
+            for n in &numbers {
+                println!("{}", n);
+            }
+        });
     })
-    .join()
-    .expect("The Thread panicked.");
-    println!("{}", t);
 }
