@@ -11,9 +11,14 @@ use std::{
 };
 
 fn main() {
-    thread::spawn(f);
-    thread::spawn(f);
+    let t1 = thread::spawn(f);
+    let t2 = thread::spawn(f);
     println!("Hello from the main thread.");
+    //the main() thread closing before execution of rest of the functions can be resolved with
+    // using the join function.
+    t1.join().expect("The thread t1 failed execution.");
+    t2.join().expect("The thread t2 failed execution.");
+    //main() will close only after finishing this execution.
 }
 
 fn f() {
