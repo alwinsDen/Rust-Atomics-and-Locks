@@ -1,3 +1,4 @@
+use std::thread::JoinHandle;
 use std::{
     cell::{Cell, RefCell, UnsafeCell},
     collections::VecDeque,
@@ -6,23 +7,31 @@ use std::{
     ops::{Deref, DerefMut},
     ptr::NonNull,
     rc::Rc,
-    sync::{*, atomic::{*, Ordering::*}},
+    sync::{
+        atomic::{Ordering::*, *},
+        *,
+    },
     thread::{self, Thread},
 };
 
 fn main() {
-    let t1 = thread::spawn(f);
-    let t2 = thread::spawn(f);
-    println!("Hello from the main thread.");
-    //the main() thread closing before execution of rest of the functions can be resolved with
-    // using the join function.
-    t1.join().expect("The thread t1 failed execution.");
-    t2.join().expect("The thread t2 failed execution.");
-    //main() will close only after finishing this execution.
+    //passing closures to the thread rather than a function itself.
+    let numbers: Vec<i32> = vec![1, 2, 4, 5];
+    //ERROR: the code here will give an error: Since the value of numbers in moved into another
+    // function.
+    test(numbers);
+    //now using closures. spawn method uses 'static lifetime  on its parameters hence they need
+    // to exist for ever. If we dont use move, numbers will be passed as reference and could
+    // cease to exists once the main() func goes out of scope.
+    thread::spawn(move || {
+        for n in numbers {
+            println!("{}", n);
+        }
+    })
+    .join()
+    .unwrap();
 }
 
-fn f() {
-    println!("Hello from another thread!");
-    let id = thread::current().id();
-    println!("This here is my thread {id:?}");
+fn test(arr: Vec<i32>) {
+    println!("{:?}", arr);
 }
