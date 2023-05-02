@@ -15,23 +15,15 @@ use std::{
 };
 
 fn main() {
-    //passing closures to the thread rather than a function itself.
-    let numbers: Vec<i32> = vec![1, 2, 4, 5];
-    //ERROR: the code here will give an error: Since the value of numbers in moved into another
-    // function.
-    test(numbers);
-    //now using closures. spawn method uses 'static lifetime  on its parameters hence they need
-    // to exist for ever. If we dont use move, numbers will be passed as reference and could
-    // cease to exists once the main() func goes out of scope.
-    thread::spawn(move || {
-        for n in numbers {
-            println!("{}", n);
-        }
+    //returning value from a thread.
+    let numbers = Vec::from_iter(0..=100);
+    let t = thread::spawn(move || {
+        let len = numbers.len();
+        //here sum() requires explicit type mentioning.
+        let sum = numbers.into_iter().sum::<usize>();
+        return sum / len;
     })
     .join()
-    .unwrap();
-}
-
-fn test(arr: Vec<i32>) {
-    println!("{:?}", arr);
+    .expect("The Thread panicked.");
+    println!("{}", t);
 }
