@@ -2,10 +2,14 @@
 //Notion Sheet: https://scratched-salute-050.notion.site/OS-and-Compilers-in-Rust-8791003a4cd4454183ff3dadb8456b63?pvs=4
 use std::thread;
 use std::boxed::Box;
+use std::rc::Rc;
+use std::sync::Arc;
 
 fn main(){
     // CHAPTER 1
-    // Reference counting.
+    //Atomically Ref Count (ARC smart pointer) and threads.
+    self::snip9();
+    // Reference counting. (example)
     self::snip8();
     // Leaking with Box
     self::snip7();
@@ -22,8 +26,23 @@ fn main(){
     // basics of concurrency in Rust.
     self::snip1();
 }
+fn snip9(){
+    let a = Arc::new([1,2,4,5,5]);
+    let b = a.clone(); //create a ref to real value.
+    thread::spawn(||{ dbg!(a); });
+    thread::spawn(||{ dbg!(b); });
+}
 fn snip8(){
-
+    let a = Rc::new([1,2,3,4]);
+    let b = a.clone(); //cloning is creating ref to the real value.
+    //here as_ptr points to the memory address where the first element of
+    // the array is stored. NOT THE VALUE
+    //e.g a.as_ptr is 0x600001060050 (this varies depending on OS storage)
+    assert_eq!(a.as_ptr(), b.as_ptr());
+    //for getting the value
+    unsafe{
+        println!("{:?}", *a.as_ptr());
+    }
 }
 fn snip7(){
     //Box::leak leaks the contents of the Box.
