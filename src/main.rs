@@ -1,15 +1,43 @@
 //Low level Concurrency in Rust
 //Notion Sheet: https://scratched-salute-050.notion.site/OS-and-Compilers-in-Rust-8791003a4cd4454183ff3dadb8456b63?pvs=4
 
-// CHAPTER 1
 use std::thread;
 fn main(){
+    // CHAPTER 1
+    //scoped Threads;
+    self::snip5();
+    //call a closure with Thread Builder method.
+    self::snip4();
     //getting value back from a thread.
     self::snip3();
     //using closures instead of Funcs()
     self::snip2();
     //basics of concurrency in Rust.
     self::snip1();
+}
+fn snip5(){
+    let numbers = vec![1,2,3,5,6,3];
+    //PROS: 1. All the the closures exist within the same scope.
+    //2. This allows borrowing variables from the environment.
+    // (as long as no modification takes place.)
+    //3. Closures are executed in order.
+    thread::scope(|s|{
+        s.spawn(||{
+            println!("{}",numbers.len());
+        });
+        s.spawn(||{
+            for n in &numbers{
+                println!("{n}");
+            }
+        });
+    });
+}
+fn snip4(){
+    let t = thread::Builder::new().spawn(||{
+        return 43i32;
+    }).unwrap();
+    let tst = t.join().unwrap();
+    println!("{tst}");
 }
 fn snip3(){
     let numbers = Vec::from_iter(0..=100);
