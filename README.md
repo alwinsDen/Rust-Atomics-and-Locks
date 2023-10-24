@@ -1,6 +1,9 @@
 # Rust-Atomics-and-Locks
 My notes and _runnable code_ samples from Low-level concurrency in practice with Rust from **Mara Bos** .
 
+Notes: https://scratched-salute-050.notion.site/Low-Level-Concurrency-in-Rust-All-Code-Snips-8791003a4cd4454183ff3dadb8456b63?pvs=4
+
+
 **CHAPTERS:**
 1. _**Basics of Rust Concurrency**_
 2. _**Atomics**_
