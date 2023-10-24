@@ -4,9 +4,15 @@ use std::thread;
 use std::boxed::Box;
 use std::rc::Rc;
 use std::sync::Arc;
+use std::cell::Cell;
 
 fn main(){
     // CHAPTER 1
+    //Cell (Internal Mutability with Cells)
+    let a = Cell::new(8i32);
+    self::snip11(&a, &a);
+    //borrowing and data-races. (Undefined Behaviour)
+    self::snip10();
     //Atomically Ref Count (ARC smart pointer) and threads.
     self::snip9();
     // Reference counting. (example)
@@ -25,6 +31,26 @@ fn main(){
     self::snip2();
     // basics of concurrency in Rust.
     self::snip1();
+}
+fn snip11(a: &Cell<i32>, b: &Cell<i32>){
+    //here a, b are references to the same variable.
+    //here the internal mutability is changed.
+    let before = a.get();
+    b.set(b.get() + 1);
+    let after = a.get();
+    println!("{:?} {:?}",a.get(),b.get());
+    if before!=after{
+        println!("THIS CODE RUNS");
+    }
+}
+fn snip10(){
+    let a = [32,2,32,2];
+    let b = unsafe{
+        //get unchecked return an index value without len bound check;
+        //if out of bound it returns random bytes.
+        a.get_unchecked(4)
+    };
+    println!("{}", b);
 }
 fn snip9(){
     let a = Arc::new([1,2,4,5,5]);
